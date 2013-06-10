@@ -7,7 +7,11 @@
 #
 class Slide
   constructor: (@element, @index, @options) ->
-    @element.css { position: 'absolute', top: 0, left: @index * @element.width() }
+    @element.css
+      top: 0
+      position: 'absolute'
+      width: (100 / @numberOfSlides) + '%'
+      left: ((100 / @numberOfSlides) * @index) + '%'
 
 class Slider
   constructor: (@container, @options) ->
@@ -63,10 +67,11 @@ class Slider
   initSlides: ->
     # Create array of slide objects
     @slides = []
+    @numberOfSlides = @container.children().length
     @container.children().each (index, element) => 
        @slides.push(new Slide($(element), index, @options))  
 
-    @container.css('width', @size.width * @slides.length)
+    @container.css('width', (100 * @slides.length) + '%')
     @initTracker()
 
   currentSlideElement: -> @slideElementForIndex @currentIndex
@@ -142,7 +147,7 @@ class Slider
       @state = 'animating'
       @callAnimationCallbackFunction 'onTransition', index
 
-      @container.animate({ left: 0 - (@size.width * index) }, @options.transitionSpeed, @options.transitionEasing, =>
+      @container.animate({ left: 0 - (100 * index) + '%' }, @options.transitionSpeed, @options.transitionEasing, =>
         @updateTracker index
         @state = 'waiting'
         @callAnimationCallbackFunction 'onComplete', index
